@@ -1,19 +1,25 @@
 import React, { useState } from 'react'
 import loginimage from '../assets/images/animation_community_management_fix.webp'
 import axios from 'axios';
-import './login.css'
+import './login.css';
+import { useNavigate } from 'react-router-dom';
+import QRCodeGenerator from '../QRcode/Qrcode';
 
 
 function Login() {
     const [login, setLogin] = useState(true)
+    const [qrcard, setQrCard] = useState(false)
     const [logindata, setLogindata] = useState({ username: '', password: '' });
     const [registerdata, setRegisterdata] = useState({ username: '', email: '', password: '' });
-
-
+    // const [qrcard, setQrCard] = useState(false)
+    const qrcodetext = "you have successfully registered as an employee" + "your email: " + registerdata.email + " " + "your username: " + registerdata.username;
+    // console.log(qrcodetext)
     const handleLogin = () => {
         setLogin(!login)
+        // setQrCard(!qrcard)
     };
 
+    const navigate = useNavigate();
     // LOGIN 
     const handleChangeLogin = (e) => {
         setLogindata({ ...logindata, [e.target.name]: e.target.value });
@@ -24,9 +30,15 @@ function Login() {
             .post('http://127.0.0.1:8000/login/', logindata)
             .then((response) => {
                 // setError(false)
-                console.log("response", response);
+                console.log("response", response.data);
+                localStorage.setItem("token", response.data.token.access)
+                if (response.data.is_manager == true) {
+                    navigate('/home-m')
+                } else {
+                    navigate('/')
+                }
+
                 // setLogindata({ ...logindata, email: '', password: '' })
-                // navigate('/home')
             })
             .catch((error) => {
                 // setError(error.response.data.non_field_errors[0])
@@ -45,6 +57,7 @@ function Login() {
             .then((response) => {
                 // setError(false)
                 console.log("response", response);
+                setQrCard(true)
                 // setLogindata({ ...logindata, email: '', password: '' })
                 // navigate('/home')
             })
@@ -53,6 +66,10 @@ function Login() {
                 // setLogindata({ ...logindata, password: '' })
                 console.log("error", error);
             });
+    };
+    const handleQrclick = () => {
+        setLogin(true);
+        setQrCard(false);
     };
 
 
@@ -128,6 +145,13 @@ function Login() {
                             <div className="register-link">Existing User? <a onClick={handleLogin}>Login</a></div>
                         </div>
                     }
+                    {qrcard ? <div className='qr-card'>
+                        <QRCodeGenerator
+                            text={qrcodetext}
+                            size="200" />
+                        <div className='qr-text'>You have Successfully registered<br></br> as an Employee </div>
+                        <div onClick={handleQrclick} className="qr-btn2">Continue to Login</div>
+                    </div> : ""}
                     <div className="login-right w-50">
                         <img src={loginimage} />
                     </div>

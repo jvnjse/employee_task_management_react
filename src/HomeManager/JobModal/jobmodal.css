@@ -1,0 +1,20 @@
+.job-view-main{
+    position: absolute;
+    background-color: rgba(186, 203, 203, 0.463);
+    z-index: 2;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.job-view-container{
+    background-color: white;
+    width: max-content;
+    height: max-content;
+}
+.job-view-status{
+    text-transform: capitalize;
+}

@@ -1,0 +1,17 @@
+.nav-main{
+    background-color: rgb(244, 244, 244);
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+    padding: 0px 20px;
+}
+.nav-main img{
+    cursor: pointer;
+    width: 100px;
+}
+.logout img{
+    width: 50px;
+    rotate: 180deg;
+    cursor: pointer;
+}
