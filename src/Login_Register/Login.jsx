@@ -11,12 +11,9 @@ function Login() {
     const [qrcard, setQrCard] = useState(false)
     const [logindata, setLogindata] = useState({ username: '', password: '' });
     const [registerdata, setRegisterdata] = useState({ username: '', email: '', password: '' });
-    // const [qrcard, setQrCard] = useState(false)
     const qrcodetext = "you have successfully registered as an employee" + "your email: " + registerdata.email + " " + "your username: " + registerdata.username;
-    // console.log(qrcodetext)
     const handleLogin = () => {
         setLogin(!login)
-        // setQrCard(!qrcard)
     };
 
     const navigate = useNavigate();
@@ -35,7 +32,7 @@ function Login() {
                 if (response.data.is_manager == true) {
                     navigate('/home-m')
                 } else {
-                    navigate('/')
+                    navigate('/home')
                 }
 
                 // setLogindata({ ...logindata, email: '', password: '' })

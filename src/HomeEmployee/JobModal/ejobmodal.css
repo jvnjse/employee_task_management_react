@@ -56,7 +56,7 @@
     padding: 2px 5px;
     border-radius: 5px;
     font-weight: 500;
-    color: white;
+    color: rgb(13, 13, 13);
 }
 
 .job-view-employee-container{
@@ -109,4 +109,8 @@
 }
 .comment-box-title{
     font-weight: 700;
+}
+
+.Dropdown{
+    background-color: aqua;
 }

@@ -1,16 +1,45 @@
-import React, { useContext } from 'react';
-import './jobmodal.css'
+import React, { useContext, useState } from 'react';
+import './ejobmodal.css'
 import profileimage from '../../assets/images/6522516.png'
-import edit from '../../assets/images/3597088.png'
+import Dropdown from 'react-dropdown';
+import axios from 'axios';
 import MyContext from '../../Context/Context';
 
 
 function JobModal(props) {
     const { HandleopenAddTask, handleModalClick } = useContext(MyContext);
     const { closeModal, id, data } = props;
+    const token = localStorage.getItem('token');
     const filteredData = data.filter(item => item.id === id);
-    console.log(data)
+    const [selectedOption, setSelectedOption] = useState(null);
+    const [comment, setComment] = useState('');
+    // console.log(data)
 
+    const showButton = selectedOption || comment;
+
+    const SubmitTask = async (event) => {
+        const postData = {
+            status: selectedOption,
+            comments: comment,
+        };
+        event.preventDefault();
+        try {
+            const response = await axios.put(`http://127.0.0.1:8000/api/jobs/${id}/status/`,
+                postData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+            console.log(response.data);
+            closeModal()
+            window.location.reload()
+        } catch (error) {
+            console.error(error);
+            console.log(error)
+        }
+    };
     const getStatusColor = (status) => {
         switch (status) {
             case 'STARTED_WORKING':
@@ -56,10 +85,23 @@ function JobModal(props) {
                         <div
                             className="job-edit-icon"
                         // onClick={HandleopenAddTask}
-                        ><img src={edit} /></div>
+                        ></div>
 
                     </div>
-                    <div className="job-view-status">Status: <span className={`job-view-status ${getStatusColor(item.status)}`}>{item.status}</span></div>
+                    <div className="job-view-status">Status: <span className={`job-view-status ${getStatusColor(item.status)}`}>{item.status}</span>
+                        <select
+                            value={selectedOption}
+                            onChange={(event) => setSelectedOption(event.target.value)}
+                        >
+                            <option value="">Change Status</option>
+                            <option value="STARTED_WORKING">STARTED_WORKING</option>
+                            <option value="CHECKING">CHECKING</option>
+                            <option value="IN_PROGRESS">IN_PROGRESS</option>
+                            <option value="NOT_STARTED">NOT_STARTED</option>
+                            <option value="DONE">DONE</option>
+                        </select>
+
+                    </div>
                     <div className="d-flex job-view-employee-container">
                         <div className="employees-working">
                             Employees Working:
@@ -74,13 +116,20 @@ function JobModal(props) {
                         <div className="job-view-start-date"><span>Start Date:</span>{item.start_date}</div>
                         <div className="job-view-end-date"><span>End Date:</span>{item.end_date}</div>
                     </div>
-                    {item.comments && <>
-                        <div className='d-flex comment-box-title'>Comments</div>
-                        <div className="comment-box d-flex">
-                            <div className="comment">{item.comments}</div>
-                        </div>
-                    </>
-                    }
+
+                    <div className='d-flex comment-box-title'>Comments</div>
+                    <div className="comment-box d-flex">
+                        <textarea
+                            className='form-control'
+                            type='text'
+                            defaultValue={item.comments}
+                            // value={comment}
+                            onChange={(event) => setComment(event.target.value)}
+                        />
+                    </div>
+                    {showButton && (
+                        <button onClick={SubmitTask}>Submit</button>
+                    )}
                 </div>
             ))}
         </div>

@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, createContext, useContext } from 'react'
 import ManNav from '../Nav/ManNav'
 import './homeman.css'
 import Jobs from '../Jobs/Jobs';
 import Addtask from '../../AddtaskModal/Addtask';
+import MyContext from '../../Context/Context';
+
+
 
 
 
@@ -28,7 +31,9 @@ function HomeManager() {
                         + Add Task
                     </div>
                 </div>
-                <Jobs HandleopenAddTask={HandleopenAddTask} />
+                <MyContext.Provider value={{ HandleopenAddTask, handleModalClick }}>
+                    <Jobs />
+                </MyContext.Provider>
             </div>
             {addtask &&
                 <div onClick={HandleopenAddTask} className='add-task-container-overlay'>

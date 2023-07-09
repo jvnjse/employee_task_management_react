@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react'
-import './jobs.css'
+import './ejobs.css'
 import axios from 'axios';
-import Addtask from '../../AddtaskModal/Addtask';
-import JobModal from '../JobModal/JobModal';
+import EJobModal from '../../HomeEmployee/JobModal/EJobModal';
 
 
 
@@ -12,16 +11,19 @@ function Jobs() {
     const [data, setData] = useState([]);
     const [selectedItem, setSelectedItem] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [filteredData, setFilteredData] = useState([]);
+    const [selectedStatus, setSelectedStatus] = useState('');
 
 
     const handleJobCardClick = (item) => {
         setSelectedItem(item);
         setIsModalOpen(true);
     };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/jobs/',
+                const response = await axios.get('http://127.0.0.1:8000/api/assigned-jobs/',
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -71,46 +73,51 @@ function Jobs() {
         return remainingDays;
     };
 
-    const [addtask, setAddtask] = useState(false);
-
-    // const HandleopenAddTask = () => {
-    //     setAddtask(!addtask)
-    // }
-
 
     const closeModal = () => {
         setIsModalOpen(false);
     };
 
+    useEffect(() => {
+        if (selectedStatus) {
+            const filteredJobs = data.filter(item => item.status === selectedStatus);
+            setFilteredData(filteredJobs);
+        } else {
+            setFilteredData(data);
+        }
+    }, [selectedStatus, data]);
+
+
+    const handleStatusChange = (event) => {
+        setSelectedStatus(event.target.value);
+    };
     return (
-        <div className='jobs-main'>
-            {data.map((item) => (
-                <>
-                    <div key={item.id} className="job-card" onClick={() => handleJobCardClick(item)}>
-                        <div className="job-title">{item.title}</div>
-                        <div className="job-description">{item.description}</div>
-                        <div className="date-box d-flex">
-                            {/* <div className="start-date">{item.start_date}</div> */}
-                            <div className="end-date"> Final date: {item.end_date}</div>
-                        </div>
-                        <div className={`job-status ${getStatusColor(item.status)}`}>{item.status}</div>
-                        {/* <div className="end-da">Final date:{item.end_date}</div> */}
-                        {calculateRemainingDays(item.end_date) > 0 &&
-                            <div className="date-notification">{calculateRemainingDays(item.end_date)}</div>}
+        <div className='ejobs-main'>
+            <div className="filter-container">
+                <select id="status-filter" value={selectedStatus} onChange={handleStatusChange}>
+                    <option value="">All</option>
+                    <option value="STARTED_WORKING">STARTED_WORKING</option>
+                    <option value="DONE">DONE</option>
+                    <option value="CHECKING">CHECKING</option>
+                    <option value="IN_PROGRESS">IN_PROGRESS</option>
+                    <option value="NOT_STARTED">NOT_STARTED</option>
+                </select>
+            </div>
+            {filteredData.map((item) => (<>
+                <div key={item.id} className="ejob-card" onClick={() => handleJobCardClick(item)}>
+                    <div className="ejob-title">{item.title}</div>
+                    <div className="ejob-description">{item.description}</div>
+                    <div className="date-box d-flex">
+                        <div className="end-date"> Final date: {item.end_date}</div>
                     </div>
-                    {/* {addtask &&
-                        <div onClick={HandleopenAddTask} className='add-task-container-overlay'>
-                            <Addtask
-                                HandleopenAddTask={HandleopenAddTask}
-                                handleModalClick={handleModalClick}
-                                title={item.title}
-                            />
-                        </div>
-                    } */}
-                </>
+                    <div className={`ejob-status ${getStatusColor(item.status)}`}>{item.status}</div>
+                    {calculateRemainingDays(item.end_date) > 0 &&
+                        <div className="date-notification">{calculateRemainingDays(item.end_date)}</div>}
+                </div>
+            </>
             ))}
             {isModalOpen && selectedItem && (
-                <JobModal closeModal={closeModal} id={selectedItem.id} data={data} />
+                <EJobModal closeModal={closeModal} id={selectedItem.id} data={data} />
             )}
         </div>
     )
