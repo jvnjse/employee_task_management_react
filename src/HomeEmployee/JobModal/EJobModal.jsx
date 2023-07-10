@@ -18,28 +18,41 @@ function JobModal(props) {
     const showButton = selectedOption || comment;
 
     const SubmitTask = async (event) => {
-        const postData = {
-            status: selectedOption,
-            comments: comment,
-        };
         event.preventDefault();
         try {
-            const response = await axios.put(`http://127.0.0.1:8000/api/jobs/${id}/status/`,
+            let postData = {
+                status: selectedOption,
+                comments: comment,
+            };
+
+            if (selectedOption === "DONE") {
+                const submissionDate = getCurrentDate(); // Get the current date
+                postData = {
+                    ...postData,
+                    submission_date: submissionDate, // Add submission_date to the postData object
+                };
+            }
+
+            const response = await axios.put(
+                `http://127.0.0.1:8000/api/jobs/${id}/status/`,
                 postData,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
             console.log(response.data);
-            closeModal()
-            window.location.reload()
+            closeModal();
+            window.location.reload();
         } catch (error) {
             console.error(error);
-            console.log(error)
+            console.log(error);
         }
     };
+
     const getStatusColor = (status) => {
         switch (status) {
             case 'STARTED_WORKING':
@@ -116,6 +129,9 @@ function JobModal(props) {
                         <div className="job-view-start-date"><span>Start Date:</span>{item.start_date}</div>
                         <div className="job-view-end-date"><span>End Date:</span>{item.end_date}</div>
                     </div>
+                    {/* <div className="done-date">
+                        {item.submission_date}
+                    </div> */}
 
                     <div className='d-flex comment-box-title'>Comments</div>
                     <div className="comment-box d-flex">

@@ -111,8 +111,8 @@ function Jobs() {
                         <div className="end-date"> Final date: {item.end_date}</div>
                     </div>
                     <div className={`ejob-status ${getStatusColor(item.status)}`}>{item.status}</div>
-                    {calculateRemainingDays(item.end_date) > 0 &&
-                        <div className="date-notification">{calculateRemainingDays(item.end_date)}</div>}
+                    {/* {item.submission_date && calculateRemainingDays(item.end_date, item.submission_date) > 0 &&
+                        <div className="date-notification">Delay Days:{calculateRemainingDays(item.end_date, item.submission_date)}</div>} */}
                 </div>
             </>
             ))}

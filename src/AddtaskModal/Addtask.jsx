@@ -58,7 +58,9 @@ function Addtask(props) {
                         'Content-Type': 'application/json'
                     }
                 });
-            console.log(response.data); // Handle the response as needed
+            console.log(response.data);
+            HandleopenAddTask()
+            window.location.reload()
         } catch (error) {
             console.error(error); // Handle the error
             console.log(error)

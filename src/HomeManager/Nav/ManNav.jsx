@@ -11,7 +11,7 @@ function ManNav() {
     const navigate = useNavigate();
     const HandleLogout = () => {
         localStorage.removeItem("token")
-        navigate("/login")
+        navigate("/")
 
     }
     return (

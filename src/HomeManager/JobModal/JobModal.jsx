@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import './jobmodal.css'
 import profileimage from '../../assets/images/6522516.png'
 import edit from '../../assets/images/3597088.png'
@@ -35,12 +35,26 @@ function JobModal(props) {
         return `${year}-${month}-${day}`;
     };
 
-    const calculateRemainingDays = (endDate) => {
+    const calculateRemainingDays = (endDate, submissionDate) => {
         const currentDate = new Date(getCurrentDate());
         const finalDate = new Date(endDate);
-        const timeDiff = finalDate.getTime() - currentDate.getTime();
+        const DoneDate = new Date(submissionDate);
+        const timeDiff = DoneDate.getTime() - finalDate.getTime();
         const remainingDays = Math.floor(timeDiff / (1000 * 3600 * 24));
-        return remainingDays;
+
+        const start = new Date(endDate);
+        const end = new Date(submissionDate);
+        let count = 0;
+
+        while (start <= end) {
+            if (start.getDay() === 0) { // Sunday has a day index of 0
+                count++;
+            }
+            start.setDate(start.getDate() + 1); // Move to the next day
+        }
+
+        const delayDays = remainingDays - count;
+        return delayDays;
     };
     return (
         <div className='job-view-main' onClick={closeModal} >
@@ -48,15 +62,24 @@ function JobModal(props) {
                 <div onClick={handleModalClick} className='job-view-container d-flex flex-column'>
                     <div className="title-container d-flex justify-content-between">
                         <div className="job-view-title">{item.title}</div>
-                        {calculateRemainingDays(item.end_date) > 0 &&
-                            <div className="job-view-des">Remaining Days: {calculateRemainingDays(item.end_date)}</div>}
+                        {item.submission_date && calculateRemainingDays(item.end_date, item.submission_date) > 0 &&
+                            <div className="job-view-des">
+                                Delay Days: {calculateRemainingDays(item.end_date, item.submission_date)}
+                            </div>
+                        }
                     </div>
                     <div className="des-icon-container d-flex justify-content-between">
                         <div className="job-view-des">{item.description}</div>
                         <div
                             className="job-edit-icon"
                         // onClick={HandleopenAddTask}
-                        ><img src={edit} /></div>
+                        ></div>
+                        {/* {item.submission_date &&
+                            <div className="job-view-delay-days">
+                                Delay Days: {calculateRemainingDays(item.end_date, item.submission_date)}
+                            </div>
+                        } */}
+
 
                     </div>
                     <div className="job-view-status">Status: <span className={`job-view-status ${getStatusColor(item.status)}`}>{item.status}</span></div>
@@ -74,6 +97,11 @@ function JobModal(props) {
                         <div className="job-view-start-date"><span>Start Date:</span>{item.start_date}</div>
                         <div className="job-view-end-date"><span>End Date:</span>{item.end_date}</div>
                     </div>
+                    {item.submission_date &&
+                        <div className="done-date">
+                            Task Completed Date: {item.submission_date}
+                        </div>
+                    }
                     {item.comments && <>
                         <div className='d-flex comment-box-title'>Comments</div>
                         <div className="comment-box d-flex">
